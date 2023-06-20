@@ -1,0 +1,1 @@
+{"prompt": "spiderman", "negative_prompt": "string", "scheduler": "EulerAncestralDiscreteScheduler", "image_size": [512, 512], "num_images": 1, "guidance_scale": 7.0, "steps": 10, "seed": 465464}

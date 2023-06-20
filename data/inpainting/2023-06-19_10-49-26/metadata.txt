@@ -1,0 +1,1 @@
+{"prompt": "cat", "negative_prompt": null, "guidance_scale": 7.0, "scheduler": "EulerAncestralDiscreteScheduler", "steps": 50, "seed": 42}

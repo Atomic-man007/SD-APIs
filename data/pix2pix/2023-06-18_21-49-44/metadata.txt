@@ -1,0 +1,1 @@
+{"prompt": "add mustache to my cat face", "negative_prompt": null, "scheduler": "EulerAncestralDiscreteScheduler", "num_images": 1, "guidance_scale": 7.0, "image_guidance_scale": 1.5, "steps": 50, "seed": 1371}
