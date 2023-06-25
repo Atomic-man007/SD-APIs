@@ -1,0 +1,1 @@
+{"prompt": "change hair color to yellow", "negative_prompt": null, "guidance_scale": 7.0, "steps": 50, "seed": 42}

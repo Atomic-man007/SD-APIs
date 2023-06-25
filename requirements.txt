@@ -12,3 +12,9 @@ tqdm
 torch==2.0.1+cu117
 pydantic==1.10.9
 loguru==0.6.0
+safetensors==0.3.1
+xformers==0.0.20
+controlnet_aux==0.0.5
+einops==0.6.1
+huggingface-hub==0.14.1
+opencv-python-headless==4.7.0.72
