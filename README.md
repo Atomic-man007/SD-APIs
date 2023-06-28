@@ -1,4 +1,5 @@
 # SD-APIs
+
 stable diffusion apis
 
 ```
@@ -14,5 +15,9 @@ python main.py
 ```
 
 ```
-uvicorn main:app
+uvicorn main:app --reload
+```
+
+```
+pip install -U --pre triton
 ```

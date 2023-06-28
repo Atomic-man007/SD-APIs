@@ -70,10 +70,21 @@ class CannyParams(BaseModel):
     prompt: str = Field(..., description="Text prompt for the pipeline")
     negative_prompt: str = Field(None, description="Negative text prompt for the pipeline")
     steps: int = Field(50, description="Number of inference steps")
-    num_images: int = Field(512, description="Image width")
-    low_threshold: int = Field(100, description="Guidance scale")
-    high_threshold: int = Field(200, description="Guidance scale")
+    low_threshold: int = Field(100, description="low_threshold scale")
+    high_threshold: int = Field(200, description="high_threshold scale")
     guidance_scale: float = Field(7, description="Guidance scale")
     num_images: int = Field(1, description="Number of images per prompt")
     seed: int = Field(42, description="Seed for the model")
+
+
+class UpscalerParams(BaseModel):
+    prompt: str = Field(..., description="Text prompt for the pipeline")
+    negative_prompt: str = Field(None, description="Negative text prompt for the pipeline")
+    steps: int = Field(50, description="Number of inference steps")
+    num_images: int = Field(1, description="Number of images per promp")
+    guidance_scale: float = Field(7, description="Guidance scale")
+    noise_level: int = Field(7, description="noise level scale")
+    eta: float = Field(0.1, description="eta scale")
+    seed: int = Field(42, description="Seed for the model")
+    scheduler: str = Field("EulerAncestralDiscreteScheduler", description="Scheduler to use for the model")
 

@@ -1,0 +1,1 @@
+{"prompt": "<A female cyborg-1>", "negative_prompt": null, "scheduler": "DPMSolverMultistepScheduler", "image_size": [512, 512], "num_images": 1, "guidance_scale": 7.0, "steps": 50, "seed": 42}
