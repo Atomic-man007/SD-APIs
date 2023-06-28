@@ -25,23 +25,23 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 @app.on_event("startup")
 async def startup_event():
 
-    x2img_model = "stabilityai/stable-diffusion-2-1"
+    x2img_model = "runwayml/stable-diffusion-v1-5" #r"C:\Users\srika\SD-APIs\api\chilloutmix_NiPrunedFp32Fix.safetensors"  #"stabilityai/stable-diffusion-2-1"
     x2img_pipeline = os.environ.get("X2IMG_PIPELINE") #custom pipeline
-    inpainting_model = "stabilityai/stable-diffusion-2-inpainting"
-    textualinversion_model = "runwayml/stable-diffusion-v1-5"
+    # inpainting_model = "stabilityai/stable-diffusion-2-inpainting"
+    # textualinversion_model = "runwayml/stable-diffusion-v1-5"
     pix_model = "timbrooks/instruct-pix2pix"
-    canny_model = "runwayml/stable-diffusion-v1-5"
+    # canny_model = "runwayml/stable-diffusion-v1-5"
     device = "cuda"
-    output_path = r"C:\Users\srika\SD_api\backend\data"
-    ti_identifier = os.environ.get("TOKEN_IDENTIFIER", "")
-    ti_embeddings_url = os.environ.get("TOKEN_EMBEDDINGS_URL", "")
+    output_path = r"C:\Users\srika\SD-APIs\data"
+    ti_identifier = "<hitokomoru-style>"
+    ti_embeddings_url = r"C:\Users\srika\SD-APIs\api\learned_embeds.bin"
     logger.info("@@@@@ Starting API @@@@@ ")
     logger.info(f"Text2Image Model: {x2img_model}")
     logger.info(f"Text2Image Pipeline: {x2img_pipeline if x2img_pipeline is not None else 'Vanilla'}")
-    logger.info(f"Inpainting Model: {inpainting_model}")
-    logger.info(f"textual inversion Model: {textualinversion_model}")
+    # logger.info(f"Inpainting Model: {inpainting_model}")
+    # logger.info(f"textual inversion Model: {textualinversion_model}")
     logger.info(f"pix2pix Model: {pix_model}")
-    logger.info(f"Canny Model: {canny_model}")
+    # logger.info(f"Canny Model: {canny_model}")
     logger.info(f"Device: {device}")
     logger.info(f"Output Path: {output_path}")
     logger.info(f"Token Identifier: {ti_identifier}")
@@ -59,30 +59,30 @@ async def startup_event():
         )
     else:
         app.state.x2img_model = None
-    logger.info("Loading inpainting model...")
-    if inpainting_model is not None:
-        app.state.inpainting_model = Inpainting(
-            model=inpainting_model,
-            device=device,
-            output_path=output_path,
-        )
+    # logger.info("Loading inpainting model...")
+    # if inpainting_model is not None:
+    #     app.state.inpainting_model = Inpainting(
+    #         model=inpainting_model,
+    #         device=device,
+    #         output_path=output_path,
+    #     )
 
-    logger.info("Loading Textual Inversion model...")
-    if textualinversion_model is not None:
-        app.state.textualinversion_model = TextualInversion(
-            model=textualinversion_model,
-            device=device,
-            output_path=output_path,
-            token_identifier=ti_identifier,
-            embeddings_url=ti_embeddings_url,
-        )
-    logger.info("Loading Canny model...")
-    if canny_model is not None:
-        app.state.canny_model = Canny(
-            model=canny_model,
-            device=device,
-            output_path=output_path,
-        )
+    # logger.info("Loading Textual Inversion model...")
+    # if textualinversion_model is not None:
+    #     app.state.textualinversion_model = TextualInversion(
+    #         model=textualinversion_model,
+    #         device=device,
+    #         output_path=output_path,
+    #         token_identifier=ti_identifier,
+    #         embeddings_url=ti_embeddings_url,
+    #     )
+    # logger.info("Loading Canny model...")
+    # if canny_model is not None:
+    #     app.state.canny_model = Canny(
+    #         model=canny_model,
+    #         device=device,
+    #         output_path=output_path,
+    #     )
     logger.info("API is ready to use!")
 
 
@@ -190,27 +190,27 @@ async def inpainting(
     base64images = convert_to_b64_list(images)
     return ImgResponse(images=base64images, metadata=params.dict())
 
-@app.post("/canny")
-async def canny(
-    params: CannyParams = Depends(), image: UploadFile = File(...)
-) -> ImgResponse:
-    if app.state.canny_model is None:
-        return {"error": "canny model is not loaded"}
-    image = Image.open(io.BytesIO(image.file.read()))
-    image = np.array(image)
-    images, _ = app.state.canny_model.generate_image(
-        image=image,
-        prompt=params.prompt,
-        negative_prompt=params.negative_prompt,
-        low_threshold=params.low_threshold,
-        high_threshold=params.high_threshold,
-        num_images=params.num_images,
-        guidance_scale=params.guidance_scale,
-        steps=params.steps,
-        seed=params.seed,
-    )
-    base64images = convert_to_b64_list(images)
-    return ImgResponse(images=base64images, metadata=params.dict())
+# @app.post("/canny")
+# async def canny(
+#     params: CannyParams = Depends(), image: UploadFile = File(...)
+# ) -> ImgResponse:
+#     if app.state.canny_model is None:
+#         return {"error": "canny model is not loaded"}
+#     image = Image.open(io.BytesIO(image.file.read()))
+#     image = np.array(image)
+#     images, _ = app.state.canny_model.generate_image(
+#         image=image,
+#         prompt=params.prompt,
+#         negative_prompt=params.negative_prompt,
+#         low_threshold=params.low_threshold,
+#         high_threshold=params.high_threshold,
+#         num_images=params.num_images,
+#         guidance_scale=params.guidance_scale,
+#         steps=params.steps,
+#         seed=params.seed,
+#     )
+#     base64images = convert_to_b64_list(images)
+#     return ImgResponse(images=base64images, metadata=params.dict())
 
 
 @app.get("/")

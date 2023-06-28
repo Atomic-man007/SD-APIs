@@ -22,11 +22,15 @@ from diffusers import (
 from loguru import logger
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
-
 import utils
+from transformers import CLIPTokenizer, CLIPTextModel
+
+
 
 
 def load_embed(learned_embeds_path, text_encoder, tokenizer, token=None):
+    # tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+    # text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
     loaded_learned_embeds = torch.load(learned_embeds_path, map_location="cpu")
     if len(loaded_learned_embeds) > 2:
         embeds = loaded_learned_embeds["string_to_param"]["*"][-1, :]
@@ -34,15 +38,15 @@ def load_embed(learned_embeds_path, text_encoder, tokenizer, token=None):
         # separate token and the embeds
         trained_token = list(loaded_learned_embeds.keys())[0]
         embeds = loaded_learned_embeds[trained_token]
-
+    token = None
     # add the token in tokenizer
     token = token if token is not None else trained_token
     num_added_tokens = tokenizer.add_tokens(token)
     i = 1
     while num_added_tokens == 0:
-        logger.warning(f"The tokenizer already contains the token {token}.")
+        print(f"The tokenizer already contains the token {token}.")
         token = f"{token[:-1]}-{i}>"
-        logger.info(f"Attempting to add the token {token}.")
+        print(f"Attempting to add the token {token}.")
         num_added_tokens = tokenizer.add_tokens(token)
         i += 1
 
@@ -54,7 +58,6 @@ def load_embed(learned_embeds_path, text_encoder, tokenizer, token=None):
     text_encoder.get_input_embeddings().weight.data[token_id] = embeds
     return token
 
-
 @dataclass
 class X2Image:
     device: Optional[str] = None
@@ -64,17 +67,32 @@ class X2Image:
     embeddings_url: Optional[str] = None
     token_identifier: Optional[str] = None
 
+    tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+    text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
+
     def __str__(self) -> str:
         return f"X2Image(model={self.model}, pipeline={self.custom_pipeline})"
 
     def __post_init__(self):
-        self.text2img_pipeline = DiffusionPipeline.from_pretrained(
-            self.model,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-            custom_pipeline=self.custom_pipeline,
-            use_auth_token=utils.use_auth_token(),
-        )
-        model_id = "timbrooks/instruct-pix2pix" 
+        if self.model.endswith(".safetensors"):
+            self.text2img_pipeline = StableDiffusionPipeline.from_ckpt(
+                self.model,
+                local_files_only=True,
+                safety_checker=None,
+                requires_safety_checker=False,
+                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                custom_pipeline=self.custom_pipeline,
+                # use_auth_token=utils.use_auth_token(),
+            )
+        else:
+            self.text2img_pipeline = DiffusionPipeline.from_pretrained(
+                self.model,
+                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
+                custom_pipeline=self.custom_pipeline,
+                # use_auth_token=utils.use_auth_token(),
+            )
+
+        model_id = "timbrooks/instruct-pix2pix"
         components = self.text2img_pipeline.components
         self.pix2pix_pipeline = None
         if isinstance(self.text2img_pipeline, StableDiffusionPipeline):
@@ -87,7 +105,8 @@ class X2Image:
             logger.error("Model type not supported, img2img pipeline not created")
 
         self.text2img_pipeline.to(self.device)
-        self.text2img_pipeline.safety_checker = utils.no_safety_checker
+        self.text2img_pipeline.safety_checker = None
+        self.text2img_pipeline.requires_safety_checker = False
         self.img2img_pipeline.to(self.device)
         self.img2img_pipeline.safety_checker = utils.no_safety_checker
         if self.pix2pix_pipeline is not None:
@@ -100,11 +119,20 @@ class X2Image:
 
         if len(self.embeddings_url) > 0 and len(self.token_identifier) > 0:
             # download the embeddings
-            self.embeddings_path = utils.download_file(self.embeddings_url)
+            self.embeddings_path = self.embeddings_url
             load_embed(
                 learned_embeds_path=self.embeddings_path,
-                text_encoder=self.pipeline.text_encoder,
-                tokenizer=self.pipeline.tokenizer,
+                text_encoder=self.text_encoder,
+                tokenizer=self.tokenizer,
+                token=self.token_identifier,
+            )
+        if len(self.embeddings_url) > 0 and len(self.token_identifier) > 0:
+            # download the embeddings
+            self.embeddings_path = self.embeddings_url
+            load_embed(
+                learned_embeds_path=self.embeddings_path,
+                text_encoder=self.img2img_pipeline.text_encoder,
+                tokenizer=self.img2img_pipeline.tokenizer,
                 token=self.token_identifier,
             )
 

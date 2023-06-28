@@ -15,7 +15,6 @@ from huggingface_hub.utils._errors import RepositoryNotFoundError
 from huggingface_hub.utils._validators import HFValidationError
 from loguru import logger
 from PIL.PngImagePlugin import PngInfo
-from st_clickable_images import clickable_images
 
 no_safety_checker = None
 

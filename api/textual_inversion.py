@@ -8,11 +8,13 @@ import torch
 from diffusers import DiffusionPipeline
 from loguru import logger
 from PIL.PngImagePlugin import PngInfo
-
+from transformers import CLIPTokenizer, CLIPTextModel
 import utils
 
 
 def load_embed(learned_embeds_path, text_encoder, tokenizer, token=None):
+    # tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+    # text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
     loaded_learned_embeds = torch.load(learned_embeds_path, map_location="cpu")
     if len(loaded_learned_embeds) > 2:
         embeds = loaded_learned_embeds["string_to_param"]["*"][-1, :]
@@ -20,15 +22,15 @@ def load_embed(learned_embeds_path, text_encoder, tokenizer, token=None):
         # separate token and the embeds
         trained_token = list(loaded_learned_embeds.keys())[0]
         embeds = loaded_learned_embeds[trained_token]
-
+    token = None
     # add the token in tokenizer
     token = token if token is not None else trained_token
     num_added_tokens = tokenizer.add_tokens(token)
     i = 1
     while num_added_tokens == 0:
-        logger.warning(f"The tokenizer already contains the token {token}.")
+        print(f"The tokenizer already contains the token {token}.")
         token = f"{token[:-1]}-{i}>"
-        logger.info(f"Attempting to add the token {token}.")
+        print(f"Attempting to add the token {token}.")
         num_added_tokens = tokenizer.add_tokens(token)
         i += 1
 
@@ -48,7 +50,8 @@ class TextualInversion:
     token_identifier: str
     device: Optional[str] = None
     output_path: Optional[str] = None
-
+    tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+    text_encoder = CLIPTextModel.from_pretrained("openai/clip-vit-large-patch14")
     def __str__(self) -> str:
         return f"TextualInversion(model={self.model}, embeddings={self.embeddings_url}, token_identifier={self.token_identifier}, device={self.device}, output_path={self.output_path})"
 
@@ -65,7 +68,7 @@ class TextualInversion:
 
         # download the embeddings
         if len(self.embeddings_url) > 0 and len(self.token_identifier) > 0:
-            self.embeddings_path = utils.download_file(self.embeddings_url)
+            self.embeddings_path = self.embeddings_url
             load_embed(
                 learned_embeds_path=self.embeddings_path,
                 text_encoder=self.pipeline.text_encoder,
