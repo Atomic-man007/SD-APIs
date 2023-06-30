@@ -1,0 +1,1 @@
+{"prompt": "dance", "negative_prompt": null, "guidance_scale": 7.0, "steps": 5, "seed": 42}

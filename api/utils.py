@@ -113,6 +113,26 @@ def save_to_local(images, module, current_datetime, metadata, output_path):
         f.write(metadata)
     logger.info(f"Saved images to {output_path}/{module}/{current_datetime}")
 
+def save_to_local_controlnet(images,poses, module, current_datetime, metadata, output_path):
+    _metadata = PngInfo()
+    os.makedirs(output_path, exist_ok=True)
+    os.makedirs(f"{output_path}/{module}", exist_ok=True)
+    os.makedirs(f"{output_path}/{module}/{current_datetime}", exist_ok=True)
+
+    for i, img in enumerate(images):
+        img.save(
+            f"{output_path}/{module}/{current_datetime}/{i}.png",
+            pnginfo=_metadata,
+        )
+    poses.save(
+        f"{output_path}/{module}/{current_datetime}/{i}_pose.png",
+    )
+
+    # save metadata as text file
+    with open(f"{output_path}/{module}/{current_datetime}/metadata.txt", "w") as f:
+        f.write(metadata)
+    logger.info(f"Saved images to {output_path}/{module}/{current_datetime}")
+
 
 def save_images(images, module, metadata, output_path):
     if output_path is None:

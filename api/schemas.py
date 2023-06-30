@@ -76,6 +76,14 @@ class CannyParams(BaseModel):
     num_images: int = Field(1, description="Number of images per prompt")
     seed: int = Field(42, description="Seed for the model")
 
+class OpenposeParams(BaseModel):
+    prompt: str = Field(..., description="Text prompt for the pipeline")
+    negative_prompt: str = Field(None, description="Negative text prompt for the pipeline")
+    steps: int = Field(50, description="Number of inference steps")
+    guidance_scale: float = Field(7, description="Guidance scale")
+    num_images: int = Field(1, description="Number of images per prompt")
+    seed: int = Field(42, description="Seed for the model")
+
 
 class UpscalerParams(BaseModel):
     prompt: str = Field(..., description="Text prompt for the pipeline")

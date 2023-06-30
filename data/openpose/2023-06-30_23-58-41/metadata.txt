@@ -1,0 +1,1 @@
+{"prompt": "superman cloths", "negative_prompt": null, "guidance_scale": 7.0, "steps": 50, "seed": 42}

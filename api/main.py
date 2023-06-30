@@ -9,13 +9,14 @@ from fastapi import Depends, FastAPI, File, UploadFile
 
 
 #imports
-from schemas import Img2ImgParams,UpscalerParams, CannyParams, ImgResponse, TextualInversionParams, InpaintingParams, InstructPix2PixParams, Text2ImgParams
+from schemas import Img2ImgParams, OpenposeParams, UpscalerParams, CannyParams, ImgResponse, TextualInversionParams, InpaintingParams, InstructPix2PixParams, Text2ImgParams
 from canny import Canny
 from x2image import X2Image
 from inpainting import Inpainting
 from api_utils import convert_to_b64_list
 from textual_inversion import TextualInversion
 from upcale_image import Upscaler
+from openpose import Openpose
 
 app = FastAPI(
     title="Stable diffusion API's"
@@ -33,6 +34,7 @@ async def startup_event():
     pix_model = "timbrooks/instruct-pix2pix"
     upscale_model = "stabilityai/stable-diffusion-x4-upscaler"
     canny_model = "runwayml/stable-diffusion-v1-5"
+    openpose_model = "SG161222/Realistic_Vision_V2.0"
     device = "cuda"
     output_path = r"C:\Users\srika\SD-APIs\data"
     ti_identifier = "<hitokomoru-style>"
@@ -45,6 +47,7 @@ async def startup_event():
     logger.info(f"pix2pix Model: {pix_model}")
     logger.info(f"upscale Model: {upscale_model}")
     logger.info(f"Canny Model: {canny_model}")
+    logger.info(f"Openpose Model: {openpose_model}")
     logger.info(f"Device: {device}")
     logger.info(f"Output Path: {output_path}")
     logger.info(f"Token Identifier: {ti_identifier}")
@@ -94,6 +97,13 @@ async def startup_event():
     if canny_model is not None:
         app.state.canny_model = Canny(
             model=canny_model,
+            device=device,
+            output_path=output_path,
+        )
+    logger.info("Loading Openpose model...")
+    if openpose_model is not None:
+        app.state.openpose_model = Openpose(
+            model=openpose_model,
             device=device,
             output_path=output_path,
         )
@@ -240,6 +250,26 @@ async def canny(
         negative_prompt=params.negative_prompt,
         low_threshold=params.low_threshold,
         high_threshold=params.high_threshold,
+        num_images=params.num_images,
+        guidance_scale=params.guidance_scale,
+        steps=params.steps,
+        seed=params.seed,
+    )
+    base64images = convert_to_b64_list(images)
+    return ImgResponse(images=base64images, metadata=params.dict())
+
+@app.post("/openpose")
+async def openpose(
+    params: OpenposeParams = Depends(), image: UploadFile = File(...)
+) -> ImgResponse:
+    if app.state.openpose_model is None:
+        return {"error": "Openpose model is not loaded"}
+    image = Image.open(io.BytesIO(image.file.read()))
+    image = np.array(image)
+    images, _ = app.state.openpose_model.generate_image(
+        image=image,
+        prompt=params.prompt,
+        negative_prompt=params.negative_prompt,
         num_images=params.num_images,
         guidance_scale=params.guidance_scale,
         steps=params.steps,
