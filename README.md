@@ -1,6 +1,15 @@
 # SD-APIs
 
-stable diffusion apis
+stable diffusion APIs
+
+APIs List:-
+canny
+depth estimator
+image segmentation
+inpainting
+openpose
+textual inversion
+upscale
 
 ```
 pip install -r requirements.txt
