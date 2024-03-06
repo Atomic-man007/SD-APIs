@@ -11,6 +11,9 @@ openpose
 textual inversion
 upscale
 
+---------------------
+![Text2Img](/data/text2img/2023-06-28_18-21-39/0.png)
+
 ```
 pip install -r requirements.txt
 ```
