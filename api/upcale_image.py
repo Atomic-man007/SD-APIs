@@ -1,16 +1,15 @@
 import gc
 import json
-from dataclasses import dataclass
-from typing import Optional
-
-import streamlit as st
 import torch
-from diffusers import StableDiffusionUpscalePipeline
-from loguru import logger
-from PIL import Image
-from PIL.PngImagePlugin import PngInfo
-from datetime import datetime
 import utils
+from PIL import Image
+import streamlit as st
+from loguru import logger
+from typing import Optional
+from datetime import datetime
+from dataclasses import dataclass
+from PIL.PngImagePlugin import PngInfo
+from diffusers import StableDiffusionUpscalePipeline
 
 @dataclass
 class Upscaler:
