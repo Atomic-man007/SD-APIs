@@ -1,13 +1,14 @@
 import cv2
-import numpy as np
-import PIL.Image
 import torch
+import PIL.Image
+import numpy as np
+from cv_utils import resize_image
 from controlnet_aux.util import HWC3, ade_palette
 from transformers import AutoImageProcessor, UperNetForSemanticSegmentation
 
-from cv_utils import resize_image
 
 
+# Image segmentation API
 class ImageSegmentor:
     def __init__(self):
         self.image_processor = AutoImageProcessor.from_pretrained(
