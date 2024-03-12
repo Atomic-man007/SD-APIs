@@ -1,23 +1,24 @@
+# importing libraries
 import gc
+import cv2
 import json
+import torch
 import random
-from dataclasses import dataclass
+import numpy as np
+from PIL import Image
 from io import BytesIO
+from loguru import logger
 from typing import Optional
 from datetime import datetime
-import numpy as np
-import cv2
-import torch
-from diffusers import ControlNetModel, UniPCMultistepScheduler, StableDiffusionControlNetPipeline
-from loguru import logger
-from PIL import Image
+from dataclasses import dataclass
 from PIL.PngImagePlugin import PngInfo
 from controlnet_aux import HEDdetector, OpenposeDetector
+from diffusers import ControlNetModel, UniPCMultistepScheduler, StableDiffusionControlNetPipeline
 
 # utils
 import utils
 
-
+# Openpose class object 
 @dataclass
 class Openpose:
     model: Optional[str] = None
