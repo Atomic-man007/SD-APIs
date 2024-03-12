@@ -1,19 +1,18 @@
 import gc
-
-import numpy as np
-import PIL.Image
 import torch
+import PIL.Image
+import numpy as np
+from cv_utils import resize_image
+from controlnet_aux.util import HWC3
+from depth_estimator import DepthEstimator
+from image_segmentor import ImageSegmentor
 from controlnet_aux import (CannyDetector, ContentShuffleDetector, HEDdetector,
                             LineartAnimeDetector, LineartDetector,
                             MidasDetector, MLSDdetector, NormalBaeDetector,
                             OpenposeDetector, PidiNetDetector)
-from controlnet_aux.util import HWC3
-
-from cv_utils import resize_image
-from depth_estimator import DepthEstimator
-from image_segmentor import ImageSegmentor
 
 
+# Preprocessor class object
 class Preprocessor:
     MODEL_ID = 'lllyasviel/Annotators'
 
