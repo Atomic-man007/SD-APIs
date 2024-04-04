@@ -1,20 +1,19 @@
 import gc
 import json
+import torch
 import random
-from dataclasses import dataclass
+import requests
+from PIL import Image
 from io import BytesIO
+from loguru import logger
 from typing import Optional
 from datetime import datetime
-import requests
-import torch
-from diffusers import StableDiffusionInpaintPipeline
-from loguru import logger
-from PIL import Image
+from dataclasses import dataclass
 from PIL.PngImagePlugin import PngInfo
+from diffusers import StableDiffusionInpaintPipeline
 
 # utils
 import utils
-
 
 @dataclass
 class Inpainting:
