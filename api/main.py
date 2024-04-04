@@ -12,11 +12,13 @@ from fastapi import Depends, FastAPI, File, UploadFile
 from schemas import Img2ImgParams, OpenposeParams, UpscalerParams, CannyParams, ImgResponse, TextualInversionParams, InpaintingParams, InstructPix2PixParams, Text2ImgParams
 from canny import Canny
 from x2image import X2Image
+from openpose import Openpose
 from inpainting import Inpainting
+from upcale_image import Upscaler
 from api_utils import convert_to_b64_list
 from textual_inversion import TextualInversion
-from upcale_image import Upscaler
-from openpose import Openpose
+
+
 
 app = FastAPI(
     title="Stable diffusion API's"
