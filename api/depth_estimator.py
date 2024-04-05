@@ -1,9 +1,8 @@
-import numpy as np
 import PIL.Image
-from controlnet_aux.util import HWC3
-from transformers import pipeline
-
+import numpy as np
 from cv_utils import resize_image
+from transformers import pipeline
+from controlnet_aux.util import HWC3
 
 
 class DepthEstimator:
